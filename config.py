@@ -3,12 +3,20 @@ import urllib.request
 
 
 def _on_ec2() -> bool:
-    """Return True when running on an EC2 instance (metadata service reachable)."""
+    """Return True when running on an EC2 instance.
+
+    IMDSv2 instances return HTTP 401 for unauthenticated requests — that is still
+    a response from the metadata service, so we ARE on EC2. Only a connection error
+    or timeout means we are running outside EC2.
+    """
     try:
         urllib.request.urlopen(
             "http://169.254.169.254/latest/meta-data/instance-id",
             timeout=0.5,
         )
+        return True
+    except urllib.error.HTTPError:
+        # Got an HTTP response (e.g. 401 IMDSv2) — metadata service is reachable → EC2
         return True
     except Exception:
         return False
