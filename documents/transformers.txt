@@ -1,0 +1,44 @@
+Transformer Architecture: Attention Is All You Need
+
+The transformer architecture was introduced by Vaswani et al. in 2017 in the landmark paper "Attention Is All You Need." It revolutionized natural language processing by replacing recurrent neural networks (RNNs) with a mechanism called self-attention, enabling highly parallelizable training and capturing long-range dependencies more effectively.
+
+Self-Attention Mechanism
+
+Self-attention (also called scaled dot-product attention) allows each position in a sequence to attend to all other positions in the same sequence simultaneously. For each input token, three vectors are computed: a Query (Q), a Key (K), and a Value (V), obtained by multiplying the input embeddings by learned weight matrices.
+
+Attention scores are computed by taking the dot product of the query with all keys, scaling by the square root of the key dimension to prevent vanishing gradients, and applying softmax to obtain a probability distribution. The output is the weighted sum of the value vectors, where weights are the attention scores. This allows each token to gather relevant information from any other position in the sequence, regardless of distance.
+
+Multi-Head Attention
+
+Multi-head attention runs several attention operations (heads) in parallel, each with different learned weight matrices. Each head can attend to different aspects of the input: one head might focus on syntactic relationships, another on semantic relationships. The outputs of all heads are concatenated and projected through a linear layer. This gives the model richer representational capacity compared to single-head attention.
+
+Positional Encoding
+
+Transformers process all tokens in parallel, unlike RNNs which process tokens sequentially. This means the model has no inherent notion of token order. Positional encoding solves this by adding a position-dependent signal to each token embedding. The original paper used sine and cosine functions of different frequencies:
+
+PE(pos, 2i) = sin(pos / 10000^(2i/d_model))
+PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+
+These encodings create unique positional signatures that are added to token embeddings before processing. Learned positional embeddings are an alternative used in models like BERT.
+
+Encoder-Decoder Structure
+
+The original transformer has an encoder-decoder structure. The encoder processes the input sequence and produces contextual representations. The decoder generates the output sequence autoregressively, one token at a time, attending to both previously generated tokens (masked self-attention) and the encoder output (cross-attention).
+
+Encoder-only models (e.g., BERT) are suited for understanding tasks like classification and question answering. Decoder-only models (e.g., GPT) are suited for generation tasks. Encoder-decoder models (e.g., T5, BART) are suited for sequence-to-sequence tasks like translation and summarization.
+
+Feed-Forward Networks and Layer Normalization
+
+Each transformer layer contains a position-wise feed-forward network applied to each position independently. It consists of two linear transformations with a ReLU activation in between. Residual connections (skip connections) are added around each sublayer, followed by layer normalization, helping with gradient flow during training.
+
+Pre-Training and Fine-Tuning
+
+The transformer paradigm enabled the pre-train and fine-tune workflow. Models are pre-trained on massive text corpora using self-supervised objectives (e.g., masked language modeling in BERT, next token prediction in GPT). The pre-trained model captures general language understanding and can then be fine-tuned on specific downstream tasks with relatively small labeled datasets, achieving state-of-the-art performance across many benchmarks.
+
+BERT, GPT, and T5
+
+BERT (Bidirectional Encoder Representations from Transformers) uses the transformer encoder and is trained with masked language modeling, where random tokens are masked and the model predicts them. Because BERT processes input bidirectionally, it excels at understanding tasks. GPT (Generative Pre-trained Transformer) uses the transformer decoder and is trained autoregressively, predicting the next token. It is unidirectional and suited for text generation. T5 (Text-to-Text Transfer Transformer) frames all NLP tasks as text-to-text problems using an encoder-decoder architecture.
+
+Scaling Laws
+
+Research has shown that transformer performance scales predictably with model size, dataset size, and compute budget. This led to the development of large language models (LLMs) with billions of parameters, such as GPT-3, GPT-4, PaLM, and Claude. These models exhibit emergent capabilities—abilities that appear at scale but are not present in smaller models.

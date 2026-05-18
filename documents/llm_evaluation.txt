@@ -1,0 +1,45 @@
+LLM and RAG Evaluation: Methods and Metrics
+
+Evaluating large language models (LLMs) and RAG systems is fundamentally different from evaluating traditional software or classical NLP models. The open-ended, generative nature of LLM outputs means there is rarely a single correct answer, making automated evaluation challenging.
+
+Traditional NLP Metrics
+
+Early NLP evaluation relied on reference-based metrics that compare generated text to a human-written reference:
+
+BLEU (Bilingual Evaluation Understudy) measures n-gram precision between the generated text and reference translations, originally designed for machine translation. While fast to compute, BLEU correlates poorly with human judgments for open-ended generation tasks.
+
+ROUGE (Recall-Oriented Understudy for Gisting Evaluation) measures n-gram overlap between generated summaries and reference summaries, focusing on recall. Common variants include ROUGE-1 (unigram), ROUGE-2 (bigram), and ROUGE-L (longest common subsequence). Like BLEU, ROUGE struggles with paraphrased or semantically equivalent answers.
+
+These metrics are inadequate for modern LLM evaluation because they penalize valid alternative phrasings and do not capture semantic meaning or factual correctness.
+
+RAGAS: RAG Assessment Framework
+
+RAGAS (Retrieval Augmented Generation Assessment) is a framework specifically designed to evaluate RAG pipelines without requiring large amounts of human-annotated data. It uses LLM-based metrics to assess different aspects of the RAG system.
+
+Faithfulness measures whether the generated answer is factually consistent with the retrieved context. It checks that all claims in the answer can be inferred from the provided context. RAGAS decomposes the answer into individual statements and verifies each one against the context using an LLM judge. A faithfulness score of 1.0 means every claim in the answer is supported by the context; a lower score indicates hallucination—information invented by the model that is not present in the retrieved documents.
+
+Answer Relevancy (Response Relevancy) measures whether the generated answer actually addresses the question asked. An answer may be factually correct but not answer the specific question posed. RAGAS generates hypothetical questions from the answer and measures how similar they are to the original question using embedding similarity. A high score means the answer is focused and directly relevant; a low score indicates the answer is off-topic or evasive.
+
+Context Precision measures the signal-to-noise ratio of the retrieved context. It evaluates whether the most relevant chunks are ranked higher in the retrieved list. If irrelevant chunks appear before relevant ones, context precision is low. This metric uses the ground truth answer to determine which retrieved chunks were actually useful.
+
+Context Recall measures whether the retrieved context contains all the information necessary to answer the question correctly, compared to the ground truth answer. A high recall means the retrieval system found all the relevant information; a low recall means important information was missed, which would make it impossible for the generator to produce a complete answer.
+
+Answer Correctness combines both semantic similarity and factual correctness between the generated answer and the ground truth answer. It is useful when ground truth answers are available.
+
+The difference between context precision and context recall: precision focuses on avoiding irrelevant context (quality of retrieved chunks), while recall focuses on not missing important information (completeness of retrieved chunks).
+
+LLM-as-Judge
+
+A powerful evaluation paradigm uses a capable LLM (e.g., GPT-4, Claude) as an automated judge to evaluate generated outputs. The judge LLM assesses responses on dimensions like helpfulness, harmlessness, factuality, and relevance, often providing both a score and an explanation. While powerful, LLM-as-judge approaches inherit the biases of the judge model and can be expensive.
+
+Human Evaluation
+
+Human evaluation remains the gold standard for LLM quality assessment. Evaluators rate outputs on dimensions such as fluency, coherence, factuality, helpfulness, and safety. Common approaches include side-by-side comparisons (A/B testing), Likert scale ratings, and adversarial testing. Human evaluation is expensive and slow but provides the most reliable signal for nuanced quality assessment.
+
+Benchmarks
+
+Standardized benchmarks enable comparison across models. MMLU (Massive Multitask Language Understanding) tests knowledge across 57 academic subjects. HumanEval measures code generation ability. TruthfulQA measures whether models generate truthful answers on questions humans often get wrong. HellaSwag tests commonsense reasoning. These benchmarks provide standardized comparison points but do not fully capture real-world performance.
+
+Evaluation Best Practices
+
+For RAG systems, evaluation should cover the full pipeline: retrieval quality (are the right documents retrieved?), generation quality (is the answer faithful and relevant?), and end-to-end quality (does the system correctly answer the user's question?). Automated metrics should be validated against human judgments to ensure they correlate with actual quality in the specific domain.

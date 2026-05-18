@@ -1,0 +1,51 @@
+Natural Language Processing: Fundamentals
+
+Natural Language Processing (NLP) is the field of artificial intelligence concerned with enabling computers to understand, generate, and manipulate human language. Language is among the most complex forms of human communication, involving grammar, semantics, pragmatics, world knowledge, and context — making NLP one of the richest and most challenging areas of AI.
+
+Tokenization
+
+Before any NLP model can process text, it must be converted to numerical form. Tokenization splits text into discrete units called tokens. Word tokenization splits on whitespace and punctuation. Character tokenization splits into individual characters. Subword tokenization (e.g., Byte Pair Encoding — BPE, WordPiece, SentencePiece) splits words into frequent subword units, balancing vocabulary size with the ability to handle rare and unseen words. Most modern language models use subword tokenization with vocabularies of 32,000–100,000 tokens.
+
+Word Embeddings
+
+Early NLP models used one-hot encodings — sparse vectors with a 1 at the word's index and 0s elsewhere. These encode no semantic information and scale poorly with vocabulary size. Word2Vec (2013) introduced dense word embeddings: neural network trained on a large corpus to predict context words (Skip-gram) or predict a word from context (CBOW). Similar words end up with similar vector representations.
+
+GloVe (Global Vectors) learns embeddings by factorizing the word co-occurrence matrix. FastText extends word2vec by representing each word as a bag of character n-grams, allowing embeddings for unseen words (out-of-vocabulary handling). These word embeddings are static — the same word always has the same vector regardless of context.
+
+Contextual Embeddings
+
+ELMo (Embeddings from Language Models) was a breakthrough: embeddings derived from the internal states of a bidirectional LSTM trained as a language model. The same word "bank" gets different embeddings in "river bank" and "bank account" because the LSTM sees the surrounding context. ELMo embeddings significantly improved downstream NLP tasks when used as features.
+
+BERT and its successors replaced ELMo with transformer-based contextual embeddings that are dramatically more powerful. Rather than training a separate embedding model and plugging in the results, BERT is pre-trained end-to-end and fine-tuned, producing rich contextual representations that directly power downstream tasks.
+
+Sequence Labeling
+
+Many NLP tasks involve labeling each token in a sequence. Named Entity Recognition (NER) labels tokens as PERSON, ORGANIZATION, LOCATION, or O (outside). Part-of-speech (POS) tagging labels tokens as noun, verb, adjective, etc. Chunking groups tokens into phrases. These are typically modeled as sequence labeling problems using CRF layers, BiLSTMs, or transformer encoders.
+
+Text Classification
+
+Text classification assigns a document to one or more categories: sentiment analysis (positive/negative/neutral), topic classification, spam detection, intent recognition. With transformer models, a [CLS] token representation is typically passed through a classification head. Fine-tuning BERT-class models on a few thousand labeled examples achieves strong performance on most classification tasks.
+
+Machine Translation
+
+Neural machine translation (NMT) maps text from a source language to a target language. Sequence-to-sequence architectures (encoder-decoder) with attention and transformer models have largely replaced phrase-based statistical MT. Models like Google Translate, DeepL, and Meta's NLLB (No Language Left Behind) support hundreds of language pairs.
+
+Question Answering
+
+Extractive QA finds a span of text in a given passage that answers the question. A model predicts start and end positions of the answer span. SQuAD (Stanford Question Answering Dataset) is a benchmark for this. Abstractive QA generates a free-form answer that may synthesize information across multiple passages, typical of modern RAG systems and conversational AI.
+
+Text Generation
+
+Language models generate text by predicting the next token given the preceding context. Autoregressive generation samples or greedily selects tokens one at a time. Beam search maintains multiple candidate sequences to find higher-probability completions. Temperature controls randomness: lower temperature makes output more deterministic; higher temperature more creative. Top-k and nucleus (top-p) sampling restrict the sampling pool to improve coherence.
+
+Semantic Similarity and Entailment
+
+Natural Language Inference (NLI) determines whether a hypothesis is entailed, contradicted, or neutral with respect to a premise. Sentence similarity models predict how semantically similar two sentences are, important for duplicate detection, semantic search, and retrieval. Sentence-BERT and similar bi-encoder models produce sentence embeddings optimized for semantic similarity comparison.
+
+Coreference Resolution
+
+Coreference resolution identifies which mentions in a text refer to the same real-world entity. "John went to the store. He bought milk." — "He" and "John" are coreferent. This is crucial for understanding discourse and is still an active research area.
+
+Challenges in NLP
+
+Language is inherently ambiguous — the same words can have different meanings depending on context, tone, and background knowledge. Sarcasm, irony, idioms, and metaphors challenge literal interpretation. Languages differ vastly in morphology, syntax, and availability of training data. Low-resource languages remain underserved. Bias in training corpora propagates into model outputs, requiring careful debiasing efforts. Hallucination — generating fluent but factually incorrect text — remains a major open problem in language generation.

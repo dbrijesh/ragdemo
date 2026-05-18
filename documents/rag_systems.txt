@@ -1,0 +1,46 @@
+Retrieval-Augmented Generation (RAG) Systems
+
+Retrieval-Augmented Generation (RAG) is a technique that combines information retrieval with large language model (LLM) generation to produce accurate, grounded, and up-to-date responses. Introduced by Lewis et al. in 2020, RAG addresses two fundamental limitations of standalone LLMs: hallucination and knowledge staleness.
+
+Core Concept
+
+A standard LLM relies entirely on parametric knowledge—information encoded in model weights during training. This knowledge has a cutoff date, may contain errors, and cannot be easily updated without retraining. RAG augments the generation process by first retrieving relevant documents or passages from an external knowledge base, then using that retrieved context to inform the generated answer. This grounds the response in factual, current, and domain-specific information.
+
+Key Components of a RAG System
+
+A RAG system has two main components: a retriever and a generator.
+
+The retriever is responsible for finding the most relevant pieces of information for a given query. It typically uses dense retrieval, where both documents and queries are encoded into vector embeddings using an embedding model, and semantic similarity (e.g., cosine similarity) is used to find the closest matches. Alternatively, sparse retrieval methods like BM25 use keyword matching. Hybrid retrieval combines both approaches.
+
+The generator is a language model (e.g., a large pre-trained transformer) that takes the original question and the retrieved context as input and generates a coherent, grounded answer. The context is typically injected into the prompt as additional information the model should use when formulating its response.
+
+How RAG Reduces Hallucination
+
+RAG reduces hallucination by grounding the language model's responses in retrieved, factual context from a knowledge base. Instead of relying solely on parametric knowledge learned during training, the model generates answers based on relevant retrieved documents, making responses more accurate, traceable, and verifiable. If the answer is not in the retrieved context, a well-designed RAG system can indicate uncertainty rather than fabricating information.
+
+Naive RAG vs. Advanced RAG
+
+Naive RAG is the simplest implementation: index documents, retrieve top-k chunks, concatenate them as context, generate an answer. While effective for many use cases, it has limitations such as low retrieval precision, loss of context in long documents, and sensitivity to chunking strategy.
+
+Advanced RAG addresses these limitations with techniques including:
+- Re-ranking: a second model reorders retrieved chunks by relevance before passing to the generator
+- HyDE (Hypothetical Document Embeddings): generate a hypothetical answer, embed it, and retrieve similar real documents
+- Query decomposition: break complex questions into sub-questions
+- Recursive retrieval: iteratively retrieve and refine context
+- Sentence-window retrieval: retrieve larger surrounding context after identifying relevant sentences
+
+Chunking Strategy
+
+How documents are split into chunks significantly affects retrieval quality. Common strategies include fixed-size chunking (by word or token count), paragraph-based chunking, sentence-level chunking, and semantic chunking (grouping sentences by semantic similarity). Overlapping chunks (where adjacent chunks share some content) prevent important information from being split across chunk boundaries.
+
+Knowledge Base Indexing
+
+Documents are preprocessed and indexed for efficient retrieval. Each chunk is converted to an embedding vector using an embedding model and stored in a vector database (e.g., ChromaDB, Pinecone, Weaviate). Metadata such as document source, section, and timestamp is stored alongside embeddings to enable filtered retrieval.
+
+Use Cases
+
+RAG is widely used in enterprise search, customer support chatbots, question-answering systems, legal and medical document analysis, code generation with repository context, and any application requiring accurate, source-grounded responses over a private or specialized knowledge base.
+
+Limitations
+
+RAG systems are constrained by retrieval quality: if the right documents are not retrieved, the generator cannot produce a correct answer. Long context windows improve RAG quality but increase latency and cost. Chunking and indexing choices significantly affect performance and require careful tuning for each use case.

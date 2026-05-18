@@ -1,0 +1,39 @@
+Artificial Intelligence: An Overview
+
+Artificial Intelligence (AI) refers to the simulation of human intelligence in machines that are programmed to think, learn, and solve problems. AI systems can perform tasks that typically require human cognition, such as understanding language, recognizing patterns, making decisions, and generating creative content.
+
+Types of Artificial Intelligence
+
+AI is broadly categorized into two types: Narrow AI (also called Weak AI) and Artificial General Intelligence (AGI).
+
+Narrow AI is designed to perform a specific task or a limited range of tasks. It excels within its defined domain but cannot generalize beyond it. Examples include image recognition systems, spam filters, recommendation engines, and virtual assistants like Siri or Alexa. All current AI systems in commercial use are narrow AI.
+
+Artificial General Intelligence (AGI) refers to a hypothetical AI that possesses the ability to understand, learn, and apply knowledge across any domain, much like a human. AGI does not yet exist and remains an active area of research. Unlike narrow AI, AGI would be able to transfer knowledge from one domain to another and reason abstractly.
+
+Types of Machine Learning
+
+Machine learning is a subset of AI that enables systems to learn from data without being explicitly programmed. There are three main types of machine learning:
+
+Supervised learning trains models on labeled datasets where the correct output is provided for each input. The model learns the mapping from inputs to outputs. Common examples include image classification, sentiment analysis, and regression tasks. Algorithms include decision trees, support vector machines, and neural networks.
+
+Unsupervised learning works with unlabeled data and finds hidden patterns or intrinsic structures. The model must discover the underlying structure on its own. Common techniques include clustering (K-means, DBSCAN), dimensionality reduction (PCA, t-SNE), and autoencoders.
+
+Reinforcement learning trains agents through interaction with an environment. The agent receives rewards for desirable actions and penalties for undesirable ones, learning a policy that maximizes cumulative reward. This approach is used in robotics, game-playing AI (AlphaGo, AlphaZero), and autonomous systems.
+
+Deep Learning
+
+Deep learning is a subfield of machine learning that uses neural networks with many layers (deep neural networks). These networks can automatically learn hierarchical representations from raw data. Key architectures include Convolutional Neural Networks (CNNs) for image tasks, Recurrent Neural Networks (RNNs) for sequential data, and Transformers for language and multimodal tasks.
+
+Training and Inference
+
+AI models have two phases: training and inference. During training, the model learns from data by adjusting its parameters to minimize a loss function using optimization algorithms like stochastic gradient descent. During inference, the trained model makes predictions on new, unseen data. Training is computationally expensive and happens once (or periodically); inference is faster and happens at deployment.
+
+Applications of AI
+
+AI applications span virtually every industry. In healthcare, AI assists in diagnosis, drug discovery, and personalized medicine. In finance, AI powers fraud detection, algorithmic trading, and credit scoring. In natural language processing, AI enables machine translation, text summarization, and conversational agents. In computer vision, AI enables autonomous vehicles, facial recognition, and medical imaging analysis.
+
+Challenges and Limitations
+
+Despite remarkable progress, AI faces significant challenges. Bias in training data can lead to unfair or discriminatory outcomes. Many deep learning models are black boxes, making interpretability difficult. AI systems can be brittle, failing on inputs that differ from training distribution. Large models require enormous computational resources, raising environmental concerns. Ensuring AI safety and alignment with human values remains a critical open problem.
+
+The development of AI continues to accelerate, driven by advances in hardware (GPUs, TPUs), the availability of large datasets, and breakthroughs in model architectures. Understanding both the capabilities and limitations of AI is essential for responsible deployment.

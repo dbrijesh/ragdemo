@@ -1,0 +1,63 @@
+RAGAS: A Deep Dive into RAG Evaluation
+
+RAGAS (Retrieval Augmented Generation Assessment) is a framework for evaluating RAG pipelines. Unlike traditional NLP metrics that compare text strings, RAGAS uses LLM judges to evaluate the semantic quality of each component in the RAG pipeline — retrieval, generation, and their interaction. This makes RAGAS well-suited for open-ended, knowledge-intensive question answering where there is no single correct string answer.
+
+Why RAG Evaluation is Hard
+
+Evaluating RAG systems is harder than evaluating classification models. There is often no single correct answer — many phrasings may be equally valid. The pipeline has multiple components (retriever and generator) that can fail independently. A correct final answer can result from poor retrieval accidentally covered by the generator's parametric knowledge. A wrong final answer can result from good retrieval but poor generation.
+
+This complexity motivates component-level evaluation: measuring retrieval quality separately from generation quality, and understanding how each contributes to end-to-end performance.
+
+Faithfulness
+
+Faithfulness measures whether every factual claim in the generated answer is supported by the retrieved context. It detects hallucination — the tendency of LLMs to generate plausible-sounding but ungrounded information.
+
+The evaluation process: RAGAS uses an LLM to decompose the answer into a list of atomic statements (e.g., "The transformer was introduced in 2017" and "It was created by Vaswani et al."). Each statement is then verified against the retrieved context by the LLM judge, asking: "Can this statement be inferred from the context?" Faithfulness = number of supported statements / total statements.
+
+A score of 1.0 means the answer is fully grounded in the context. A score of 0.5 means half the claims were invented by the LLM from its parametric knowledge rather than derived from the retrieved context.
+
+Answer Relevancy
+
+Answer relevancy measures whether the generated answer directly addresses the question asked. An answer can be faithful (fully supported by context) but irrelevant (not actually answering what was asked) — for example, responding to "What is BERT?" with a paragraph about GPT that appears in the same context.
+
+Evaluation: RAGAS generates multiple hypothetical questions from the answer using an LLM, then measures the average cosine similarity between these generated questions and the original question using an embedding model. If the generated questions are similar to the original, the answer is on-topic. This embedding-based approach captures semantic relevance rather than requiring exact keyword matches.
+
+Context Precision
+
+Context precision measures the signal-to-noise ratio of the retrieved contexts. It asks: "Are the relevant chunks ranked higher than the irrelevant ones?"
+
+Evaluation: For each retrieved chunk, an LLM judge determines whether it was useful for generating the correct answer (using the ground-truth as reference). Precision is computed as an average precision metric that rewards systems that put the most useful chunks at the top of the ranked list. A high context precision means the retriever is not retrieving junk that confuses the generator; a low score means many irrelevant chunks are being passed to the generator.
+
+Context Recall
+
+Context recall measures completeness of retrieval: was all the information needed to answer the question actually retrieved? It requires a ground-truth reference answer.
+
+Evaluation: RAGAS decomposes the ground-truth answer into atomic statements, then for each statement, checks whether it can be attributed to (i.e., found within) the retrieved contexts. Recall = number of ground-truth statements found in contexts / total ground-truth statements. A low recall means the retriever failed to fetch key information — the generator could not have produced the correct answer even if it tried.
+
+The Relationship Between Metrics
+
+The four core RAGAS metrics measure different failure modes:
+
+- Low faithfulness → generator hallucinating (answer not grounded in context)
+- Low answer relevancy → generator going off-topic (answer doesn't address the question)
+- Low context precision → retriever fetching noise (too many irrelevant chunks)
+- Low context recall → retriever missing information (not finding what's needed)
+
+Improving one metric may not improve others. Adding more retrieved chunks (higher k) may improve context recall but hurt context precision. Increasing model temperature may hurt faithfulness. Understanding which metric is bottlenecking the system guides targeted improvements.
+
+RAGAS vs Human Evaluation
+
+RAGAS is designed to correlate with human judgment without requiring expensive human annotation. Studies have shown RAGAS scores correlate moderately to strongly with human ratings across multiple datasets. However, LLM-based judges inherit biases of the judge model — they may favor their own style, prefer longer answers, or struggle with domain-specific content. Using a stronger judge LLM (e.g., GPT-4 or Claude) generally improves correlation with human judgments.
+
+Testset Generation with RAGAS
+
+RAGAS also includes tools for synthetic test set generation. Given a set of documents, RAGAS can generate question-answer pairs by:
+1. Selecting random text passages (seeds)
+2. Generating questions that require information from those passages
+3. Generating reference answers grounded in the passages
+
+This enables evaluation without manual annotation, which is especially valuable for private knowledge bases where no labeled QA pairs exist. Questions can be categorized as simple (single-hop), multi-hop (requiring synthesis across multiple passages), or conversational.
+
+Practical Recommendations
+
+When using RAGAS in practice: ensure the judge LLM is different from (and typically stronger than) the generator LLM to avoid self-serving evaluation bias. Run evaluation on a diverse set of questions covering both easy and hard cases. Monitor all four metrics together — optimizing a single metric in isolation can degrade others. Use RAGAS as a development metric rather than an absolute quality threshold.

@@ -1,0 +1,51 @@
+Deep Learning: Neural Networks at Scale
+
+Deep learning is a subfield of machine learning that uses artificial neural networks with many layers to learn representations from raw data. By composing simple nonlinear transformations across many layers, deep networks can learn increasingly abstract features — from edges in images to semantic concepts in text — automatically from data without manual feature engineering.
+
+Artificial Neural Networks
+
+A neural network consists of layers of interconnected nodes (neurons). Each connection has a weight. A neuron computes a weighted sum of its inputs, adds a bias, then applies a nonlinear activation function. The classic feedforward (fully connected) layer connects every neuron in one layer to every neuron in the next.
+
+Training uses backpropagation — the chain rule of calculus applied to compute gradients of the loss with respect to every weight in the network. An optimizer (typically stochastic gradient descent or Adam) uses these gradients to update weights, iteratively minimizing the loss on training data.
+
+Activation Functions
+
+Early networks used sigmoid and tanh activations, but these suffer from the vanishing gradient problem — gradients shrink exponentially in deep networks, preventing learning in early layers. ReLU (Rectified Linear Unit) — max(0, x) — largely solved this by providing a constant gradient for positive inputs, enabling training of much deeper networks. Variants like Leaky ReLU, ELU, and GELU are used in modern architectures.
+
+Convolutional Neural Networks (CNNs)
+
+CNNs are specialized for grid-structured data (images, audio). A convolutional layer applies a small learnable filter across the input, sharing weights across spatial positions. This provides translation invariance and dramatically reduces the number of parameters compared to fully connected layers.
+
+A typical CNN alternates convolutional layers (feature detection) with pooling layers (spatial downsampling) and activation functions. After several such stages, the feature maps are flattened and passed through fully connected layers for classification. AlexNet (2012), VGG, ResNet, and EfficientNet are landmark CNN architectures.
+
+ResNet and Skip Connections
+
+Residual networks (ResNets) introduced skip connections: the input to a layer is added directly to the layer's output, creating F(x) + x. This identity shortcut allows gradients to flow directly backward through skip connections, enabling training of networks with hundreds or even thousands of layers. Skip connections are now standard in nearly all modern deep architectures.
+
+Recurrent Neural Networks (RNNs)
+
+RNNs process sequences by maintaining a hidden state that is updated at each time step. The same weights are applied at each step, allowing the model to handle variable-length sequences. LSTMs (Long Short-Term Memory) and GRUs (Gated Recurrent Units) extend basic RNNs with gating mechanisms that control information flow, enabling learning of longer-range dependencies. RNNs were dominant for NLP before transformers largely replaced them.
+
+Normalization Techniques
+
+Batch normalization normalizes layer inputs across the batch dimension, accelerating training and improving regularization. Layer normalization normalizes across the feature dimension (not batch), making it suitable for transformers and variable-batch settings. Group normalization is a variant between the two.
+
+Regularization
+
+Deep networks are prone to overfitting — memorizing training data rather than learning generalizable patterns. Key regularization techniques include: dropout (randomly zeroing neurons during training), weight decay (L2 penalty on weights), data augmentation (creating new training examples via transformations), and early stopping (halting training when validation loss stops improving).
+
+Optimizers
+
+Stochastic Gradient Descent (SGD) with momentum is a classic optimizer. Adam (Adaptive Moment Estimation) combines momentum with per-parameter adaptive learning rates and has become the default for most deep learning tasks. AdamW decouples weight decay from the gradient update, improving regularization. Learning rate scheduling (warmup, cosine decay) further improves convergence.
+
+Transfer Learning
+
+Pretraining a model on large datasets and fine-tuning on smaller task-specific datasets is now the dominant paradigm. ImageNet-pretrained CNNs are fine-tuned for medical imaging. Language-model-pretrained transformers are fine-tuned for sentiment analysis, named entity recognition, and question answering. This dramatically reduces the data and compute needed for new tasks.
+
+Foundation Models
+
+Foundation models are large models trained at scale on broad data that can be adapted to many downstream tasks. GPT, BERT, CLIP, DALL-E, and Stable Diffusion are examples. These models exhibit emergent capabilities — behaviors that arise at scale but are not present in smaller models. Foundation models represent a paradigm shift from task-specific models trained from scratch.
+
+Hardware Acceleration
+
+Deep learning is compute-intensive. GPUs (Graphics Processing Units) excel at the matrix multiplications that dominate neural network computations, offering massive parallelism. TPUs (Tensor Processing Units), developed by Google, are custom ASICs even more optimized for deep learning. Modern large models require clusters of hundreds or thousands of accelerators and take weeks to train.

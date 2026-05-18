@@ -1,0 +1,49 @@
+Vector Databases: Enabling Semantic Search at Scale
+
+A vector database is a specialized storage system designed to efficiently store, index, and query high-dimensional vector embeddings. Unlike traditional databases that store structured data and use exact matching, vector databases enable semantic similarity search—finding items that are conceptually similar to a query, even without exact keyword matches.
+
+What Are Embeddings?
+
+Embeddings are dense numerical representations of data (text, images, audio, etc.) in a high-dimensional vector space, typically with hundreds or thousands of dimensions. They are produced by neural network models trained to capture semantic meaning: items with similar meaning or content are placed close together in the embedding space. For example, "car" and "automobile" would have very similar embeddings, even though they share no letters.
+
+Text embeddings from models like OpenAI's text-embedding-ada-002, Amazon's Titan Text Embeddings, or Cohere Embed are widely used to represent sentences, paragraphs, or documents as fixed-size vectors for semantic search.
+
+Similarity Metrics
+
+Vector databases commonly use three similarity metrics to measure how close two vectors are:
+
+Cosine similarity measures the cosine of the angle between two vectors. It ranges from -1 to 1, where 1 means identical direction. Cosine similarity is scale-invariant (it ignores vector magnitude), making it popular for text embeddings where the length of the text should not affect similarity.
+
+Euclidean distance (L2) measures the straight-line distance between two vectors. Smaller values indicate higher similarity. It is sensitive to vector magnitude, so vectors are often normalized before use.
+
+Dot product similarity computes the sum of element-wise products. For normalized unit vectors, it equals cosine similarity. Many modern embedding models return normalized vectors specifically to enable fast dot product search.
+
+Approximate Nearest Neighbor Algorithms
+
+Exact nearest neighbor search in high-dimensional spaces requires comparing a query vector against every stored vector (brute-force), which becomes prohibitively slow at scale. Approximate Nearest Neighbor (ANN) algorithms trade a small amount of accuracy for dramatically faster search times.
+
+HNSW (Hierarchical Navigable Small World) is one of the most widely used ANN algorithms. It builds a multi-layer graph structure where upper layers contain long-range connections enabling fast coarse traversal, while lower layers contain short-range connections for precise local search. During a query, the search starts at the top layer, quickly navigating toward the relevant region, then descends to lower layers for refinement. This hierarchical structure enables sub-linear search time complexity, making it efficient even for billions of vectors.
+
+IVF (Inverted File Index) partitions the vector space into clusters using k-means. At query time, only the nearest clusters are searched, reducing the search space. IVF is often combined with Product Quantization (PQ) for memory compression.
+
+LSH (Locality-Sensitive Hashing) uses hash functions that map similar vectors to the same bucket with high probability, enabling approximate search through hash table lookups.
+
+Popular Vector Databases
+
+ChromaDB is an open-source, lightweight vector database designed for AI applications. It runs in-process (embedded) or as a server, supports persistent storage, and integrates seamlessly with LangChain. It is ideal for prototypes and local development.
+
+Pinecone is a fully managed, cloud-native vector database offering high availability, automatic scaling, and real-time updates. It supports metadata filtering and is designed for production workloads.
+
+Weaviate is an open-source vector database with built-in support for multi-modal data, hybrid search (combining vector and BM25), and a GraphQL API.
+
+Qdrant is an open-source vector database written in Rust, offering high performance, rich filtering, and support for named vectors (multiple embedding spaces per record).
+
+Faiss (Facebook AI Similarity Search) is a library (not a full database) for efficient similarity search, widely used as the underlying index in many vector database implementations.
+
+Metadata Filtering
+
+Modern vector databases allow combining semantic search with metadata filters. For example, you can retrieve the most semantically similar documents written after a specific date, from a particular author, or belonging to a specific category. This hybrid approach—semantic relevance plus structured filtering—is critical for production RAG systems.
+
+Use Cases
+
+Vector databases power semantic search, recommendation systems, duplicate detection, anomaly detection, RAG knowledge bases, image similarity search, and any application requiring "find items similar to this" queries over large collections.

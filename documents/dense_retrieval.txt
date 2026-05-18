@@ -1,0 +1,60 @@
+Dense Retrieval: Neural Methods for Information Retrieval
+
+Information retrieval is the task of finding relevant documents or passages given a query. Traditional retrieval systems relied on sparse, lexical representations. Modern dense retrieval uses neural networks to embed queries and documents into continuous vector spaces, enabling semantic matching beyond keyword overlap.
+
+Sparse vs Dense Retrieval
+
+Sparse retrieval (e.g., BM25, TF-IDF) represents documents as sparse vectors over a vocabulary. Each dimension corresponds to a term, and the weight reflects term frequency and inverse document frequency. BM25 is still highly competitive and is often used as a baseline. Its main limitation is lexical mismatch — failing to match "car" with "automobile" or "begin" with "commence" unless explicit synonyms or query expansion is used.
+
+Dense retrieval represents both queries and documents as dense low-dimensional vectors (typically 256–1024 dimensions). Similarity is computed as the inner product or cosine similarity between these vectors. Because the vectors are learned, semantically similar text ends up close in vector space even without lexical overlap.
+
+Bi-Encoder Architecture
+
+The bi-encoder is the dominant architecture for dense retrieval. A query encoder and a document encoder (often sharing weights) independently encode the query and each document into dense vectors. Similarity is computed as a simple dot product.
+
+Because documents are encoded independently of the query, all document embeddings can be pre-computed and stored in a vector index. At query time, only the query needs to be encoded, and the nearest document vectors are found via approximate nearest neighbor (ANN) search. This makes bi-encoders highly efficient at retrieval time, supporting millions of documents.
+
+Dense Passage Retrieval (DPR)
+
+DPR (Karpukhin et al., 2020) was a landmark bi-encoder system for open-domain question answering. It trains two separate BERT encoders (one for queries, one for passages) using in-batch negative training: for a batch of question-passage pairs, the correct passage is the positive and all other passages in the batch are used as negatives. DPR significantly outperformed BM25 on the NaturalQuestions and TriviaQA benchmarks.
+
+Cross-Encoder Architecture
+
+Cross-encoders process the query and document jointly: the concatenation [CLS] query [SEP] document [SEP] is passed through a transformer encoder, and a classification head predicts the relevance score. Cross-encoders achieve much higher accuracy than bi-encoders because they allow full attention between query and document tokens.
+
+The downside is efficiency: cross-encoders cannot pre-compute document representations and must score each (query, document) pair at query time, making them O(n) rather than O(log n). For this reason, cross-encoders are typically used as re-rankers on top of a bi-encoder's top-k results: retrieve 100 candidates with the fast bi-encoder, then re-rank with the accurate cross-encoder.
+
+ColBERT: Late Interaction
+
+ColBERT (Khattab and Zaharia, 2020) introduces a late interaction paradigm between bi-encoders and cross-encoders. Both query and document are encoded independently (as in bi-encoders), but they retain all token-level embeddings rather than a single vector. Relevance is computed as the sum of maximum cosine similarities between each query token embedding and all document token embeddings (MaxSim).
+
+This allows pre-computing document token embeddings, while still capturing fine-grained token-level interaction. ColBERT achieves accuracy close to cross-encoders at a fraction of the retrieval cost, making it attractive for production systems.
+
+Negative Mining
+
+The quality of retrieved negatives during training strongly impacts dense retrieval performance. Hard negatives — documents that are relevant-seeming but not actually correct — force the model to learn finer distinctions. Strategies include:
+- BM25 negatives: retrieve with BM25 and use non-relevant top results
+- In-batch negatives: use other questions' positive passages in the same batch
+- Mined hard negatives from an earlier retrieval model
+- Round-trip consistency: generate synthetic questions from passages
+
+Hybrid Retrieval
+
+Hybrid retrieval combines sparse (BM25) and dense retrieval scores. Reciprocal Rank Fusion (RRF) or learned linear interpolation of sparse and dense scores typically outperforms either alone, especially on queries that benefit from exact keyword matching (e.g., proper nouns, codes) or semantic understanding.
+
+Domain Adaptation
+
+General-purpose embedding models (trained on web text or MS MARCO) may perform poorly on specialized domains (medical, legal, code). Domain adaptation strategies include:
+- Fine-tuning the retriever on domain-specific question-passage pairs
+- Using domain-specific pre-trained language models as the encoder backbone
+- Contrastive training with domain-specific synthetic data from an LLM
+
+Retrieval Augmented Generation and Dense Retrieval
+
+In RAG systems, a dense retriever is typically the first stage: given a user query, it retrieves the top-k relevant passages from a knowledge base. The quality of this retrieval step directly determines the ceiling of the generator's performance — a generator cannot produce correct answers if the retriever fails to retrieve relevant passages.
+
+Modern RAG systems use fine-tuned bi-encoders (such as E5, GTE, or BGE) that are specifically trained for retrieval, combined with HNSW vector indexes in databases like ChromaDB, Pinecone, or Weaviate for efficient ANN search at scale.
+
+Evaluation of Dense Retrieval
+
+Dense retrieval is evaluated on metrics such as Recall@k (fraction of queries for which the correct passage appears in the top-k results), Mean Reciprocal Rank (MRR), and NDCG. Benchmarks include MS MARCO, BEIR (a heterogeneous benchmark covering 18 diverse retrieval tasks), and MTEB (Massive Text Embedding Benchmark) for embedding models.

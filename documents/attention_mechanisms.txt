@@ -1,0 +1,65 @@
+Attention Mechanisms in Deep Learning
+
+Attention mechanisms are a fundamental building block of modern deep learning, enabling models to focus on relevant parts of the input when producing an output. Originally developed for neural machine translation, attention has since become central to transformers, vision models, and multimodal systems.
+
+The Core Idea of Attention
+
+Before attention, sequence-to-sequence models compressed the entire input into a single fixed-size vector (the encoder's final hidden state), which then had to represent the entire meaning of the input for the decoder. This bottleneck severely limited performance on long sequences.
+
+Attention solves this by allowing the decoder to look back at all encoder hidden states at each decoding step and selectively weight them based on relevance. The model "attends" to different input tokens at different output steps — for example, when translating "bank account" to French, the word "compte" attends strongly to "account" and weakly to "bank".
+
+Bahdanau Attention (Additive Attention)
+
+Introduced by Bahdanau et al. in 2015, this was the first widely adopted attention mechanism. For each decoding step, an alignment score is computed between the current decoder state and each encoder hidden state using a small neural network. These scores are normalized via softmax to produce attention weights, which are used to compute a weighted sum of encoder states called the context vector.
+
+The context vector, concatenated with the decoder state, is used to generate the next output token. This allowed sequence-to-sequence models to handle much longer sequences by letting the decoder focus on relevant input positions dynamically.
+
+Scaled Dot-Product Attention
+
+The transformer architecture replaced additive attention with scaled dot-product attention, which is faster and more parallelizable. Given queries Q, keys K, and values V:
+
+Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) V
+
+The dot product of queries and keys measures compatibility (relevance). Scaling by sqrt(d_k) prevents the dot products from becoming too large and pushing softmax into saturation. The softmax produces a probability distribution over the values, which are then summed with these weights.
+
+Multi-Head Attention
+
+Instead of performing a single attention computation, multi-head attention runs h parallel attention heads, each with different learned projections:
+
+MultiHead(Q, K, V) = Concat(head_1, ..., head_h) W^O
+where head_i = Attention(Q W_i^Q, K W_i^K, V W_i^V)
+
+Each head can attend to different aspects of the input simultaneously. One head might track syntactic dependencies, another semantic relationships, another coreference. Splitting the model's representational capacity across multiple heads gives the model richer expressiveness than a single large attention.
+
+Self-Attention vs Cross-Attention
+
+Self-attention (intra-attention) computes attention within a single sequence — queries, keys, and values all come from the same sequence. This lets each position directly attend to every other position in the sequence, capturing long-range dependencies regardless of distance.
+
+Cross-attention computes attention between two different sequences — queries come from one sequence (the decoder) and keys/values come from another (the encoder output). This is how the decoder in sequence-to-sequence transformers integrates information from the source sequence.
+
+In encoder-only models like BERT, only self-attention is used. In decoder-only models like GPT, causal (masked) self-attention is used, where each position can only attend to previous positions to prevent information leakage during training. In encoder-decoder models like T5, both self-attention (in encoder and decoder) and cross-attention (decoder attending to encoder) are used.
+
+Causal Masking
+
+For autoregressive generation, attention must be masked so that position i cannot attend to positions j > i. This is implemented by adding a mask of -infinity to the attention logits at masked positions before softmax, effectively zeroing those attention weights. During inference, each new token is generated one at a time, attending only to previously generated tokens.
+
+Sparse Attention
+
+Full self-attention has O(n²) time and memory complexity with respect to sequence length n, which becomes prohibitive for very long sequences. Sparse attention patterns reduce this cost by computing attention only between a subset of positions. Examples include:
+- Local attention: each token attends only to a fixed window of neighbors
+- Strided attention: tokens attend to positions at fixed intervals
+- Global attention (BigBird, Longformer): a few special tokens attend to all positions
+
+Linear Attention
+
+Linear attention approximates the softmax attention with a kernel function, reducing complexity from O(n²) to O(n). Models like Performer and FNet use random feature maps or Fourier transforms to achieve this. While less expressive than full attention, linear attention enables processing of sequences with millions of tokens.
+
+Flash Attention
+
+FlashAttention (2022) is a hardware-aware algorithm that computes exact attention in O(n) memory (rather than O(n²)) by tiling the computation across GPU SRAM to minimize slow HBM memory reads/writes. It produces the same numerical result as standard attention but runs 2-4x faster in practice. FlashAttention-2 further improves parallelism. This enabled training of models with much longer context windows efficiently.
+
+Attention in Vision
+
+Vision Transformer (ViT) applies self-attention to image patches rather than text tokens. An image is divided into fixed-size patches (e.g., 16×16 pixels), linearly projected to embedding vectors, and processed with standard transformer self-attention. This architecture achieves state-of-the-art on image classification when trained on large enough datasets.
+
+Attention weights have been studied as a form of interpretability — visualizing which input tokens a model attends to when generating a particular output can provide insight into model behavior, though attention and explanation are not always synonymous.
